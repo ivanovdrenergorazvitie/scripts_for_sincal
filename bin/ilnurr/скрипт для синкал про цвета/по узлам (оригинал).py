@@ -1,0 +1,185 @@
+import sqlite3
+import pandas as pd
+import openpyxl
+def name_changer(b):
+    a = []
+    for i in range(len(b)):
+        a.append(b[i][0])
+    return a
+
+
+path_db = 'database.db'
+con = sqlite3.connect(path_db)
+cursorObj = con.cursor()
+
+#   ---- Формирование списка groupID
+# groupID0 = cursorObj.execute(
+#     "SELECT Group_ID, Name FROM NetworkGroup WHERE Name NOT LIKE 'Base%Area'").fetchall()
+
+groupID0 = cursorObj.execute(
+    "SELECT Group_ID, Name FROM NetworkGroup").fetchall()
+groupID = name_changer(groupID0)
+df = pd.DataFrame()
+
+fullvariantID = cursorObj.execute(
+    "SELECT Variant_ID FROM Variant").fetchall()
+variantID0 = name_changer(fullvariantID)
+
+userVariantID = int(input('Ввведите вариант схемы (' + str(fullvariantID)+ '): '))
+variantID = []
+variantID1 = userVariantID
+nodeID = []
+terminalID = []
+gterminalID = []
+nodeID0 = []
+print(variantID0)
+if userVariantID != 1:
+    while variantID1 != 0:
+        variantID += [variantID1]
+        print(variantID)
+        parentVariantID = cursorObj.execute(
+            "SELECT ParentVariant_ID FROM Variant WHERE Variant_ID IN ({0})".format(
+                str(variantID1))).fetchall()
+        parentVariantID = name_changer(parentVariantID)
+        parentVariantID = parentVariantID[0]
+        variantID1 = parentVariantID
+else:
+    variantID = [1]
+input('Продолжить')
+
+
+def varID(var, flag):
+
+    global nodeID, terminalID, gterminalID
+
+    if flag == 1:
+        terminalID0 = cursorObj.execute(
+            "SELECT Terminal_ID FROM Terminal WHERE Node_ID IN ({0}) AND VARIANT_ID IN ({1})".format(
+                str(nodeID[osn2]), str(var))).fetchall()
+        terminalID0 = name_changer(terminalID0)
+        terminalID = list(set(terminalID).union(set(terminalID0)))
+
+    elif flag == 2:
+        nodeID0 = cursorObj.execute(
+            "SELECT Node_ID FROM Node WHERE Group_ID IN ({0}) AND VARIANT_ID IN ({1})".format(
+                str(groupID[osn1]), str(var))).fetchall()
+        nodeID1 = name_changer(nodeID0)
+        nodeID = list(set(nodeID).union(set(nodeID1)))
+
+    elif flag == 3:
+        gterminalID0 = cursorObj.execute(
+            "SELECT GraphicTerminal_ID FROM GraphicTerminal WHERE Terminal_ID IN ({0})".format(
+                str(terminalID[osn3]))).fetchall()
+        gterminalID0 = name_changer(gterminalID0)
+        gterminalID = list(set(gterminalID).union(gterminalID0))
+
+#   ---- Формирование списка nodeID
+for osn1 in range(len(groupID)):
+    red = 0
+    green = 0
+    blue = 0
+    print()
+    print(osn1, groupID0[osn1][1])
+    nodeID.clear()
+
+
+    for i in variantID:
+        varID(i, 2)
+    print('nodeID', nodeID)
+    #   ---- Формирование списка terminalID
+    for osn2 in range(len(nodeID)):
+        terminalID.clear()
+        for i in variantID:
+            # varID(i, 1)
+            terminal0 = cursorObj.execute(
+                "SELECT Terminal_ID, Element_ID FROM Terminal WHERE Node_ID IN ({0}) AND VARIANT_ID IN ({1})".format(
+                    str(nodeID[osn2]), str(i))).fetchall()
+            if terminal0 == []:
+                continue
+        terminalID0 = []
+        termElID = []
+        if terminal0 == []:
+            continue
+
+        for term1 in range(len(terminal0)):
+            terminalID0.append(terminal0[term1][0])
+            termElID.append(terminal0[term1][1])
+        terminalID = list(set(terminalID).union(set(terminalID0)))
+
+    #   ---- Формирование списка  gterminalID
+        for osn3 in range(len(terminalID)):
+            indicator = 0
+            elGroupID = cursorObj.execute(
+                "SELECT Group_ID FROM Element WHERE Element_ID IN ({0})".format(str(termElID[osn3]))).fetchone()
+            if elGroupID[0] != groupID[osn1]:
+                indicator = 1
+            if indicator == 1:
+                continue
+            gterminalID.clear()
+            for i in variantID:
+                varID(i, 3)
+            # chetosn5 = []
+            # nechetosn5 = []
+            for osn4 in range(len(gterminalID)):
+                gaterminalID0 = cursorObj.execute(
+                    "SELECT * FROM GraphicAddTerminal WHERE GraphicTerminal_ID IN ({0})".format(
+                        str(gterminalID[osn4]))).fetchall()
+                #   ---- Фильтр для защиты
+                for osn5 in range(len(gaterminalID0)):
+                    osn6 = 0
+                    while osn6 < len(variantID):
+                        if gaterminalID0[osn5][19] != variantID[osn6]:
+                            osn6 += 1
+                            continue
+                        elif gaterminalID0 == []:
+                            break
+                        elif gaterminalID0[osn5][5] == 0:
+                            break
+                        osn6 = len(variantID)
+                    gaterminalID = gaterminalID0[osn5][5]
+
+                    #   ---- Переменные на две итерации
+                    #                 if osn4 % 2 == 0:
+                    #                     chetosn5 = gterminalID
+                    #                     if chetosn5 == nechetosn5:
+                    #                         gatcolor = 0
+                    #                     else:
+                    #                         gatcolor = gaterminalID
+                    #
+                    #                 elif osn4 % 2 == 1:
+                    #                     nechetosn5 = gterminalID
+                    #                     if nechetosn5 == chetosn5:
+                    #                         gatcolor = 0
+                    #                     else:
+                    #                         gatcolor = gaterminalID
+
+                    nodename = cursorObj.execute(
+                        "SELECT Name FROM Node WHERE Node_ID IN ({0})".format(str(nodeID[osn2]))).fetchone()
+
+                    gatcolor = gaterminalID
+                    #   ---- Выбор максимального варианта для gaterminal
+                    if gatcolor == 0:
+                        continue
+                    elif gatcolor == 65280:
+                        green += 1
+                        print('green', gterminalID, nodename[0])
+                    elif gatcolor == 255:
+                        red += 1
+                        print('red', gterminalID, nodename[0])
+                    elif gatcolor == 16763904:
+                        blue += 1
+                        print('blue', gterminalID, nodename[0])
+
+    list_of_colors = [green, red, blue]
+    df[groupID0[osn1][1]] = list_of_colors
+
+    print('green; ' + str(green))
+    print('blue; ' + str(blue))
+    print('red; ' + str(red))
+
+df.to_excel('количество цветных узлов.xlsx')
+
+print(df)
+
+#   ЗЕЛЕНЫЙ - 0, КРАСНЫЙ - 1, СИНИЙ - 2
+
