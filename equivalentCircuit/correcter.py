@@ -169,6 +169,8 @@ for el1 in range(len(elementID)):
         elif bpointID1 == []:
             bpx2 = next(bpointID2[x] for x in range(len(bpointID2)) if bpointID2[x][3] == 1)[1]
             bpy2 = next(bpointID2[y] for y in range(len(bpointID2)) if bpointID2[y][3] == 1)[2]
+            cursorObj.execute("UPDATE GraphicElement SET SymCenterX =({0}) WHERE Element_ID IN ({1})".format(
+                str(ksize * (gtx1 + bpx2) / 2), str(elementID[el1])))
 
             # Вертикально
             if (bpx2 - gtx1) ** 2 < (bpy2 - gty1) ** 2:
@@ -182,6 +184,10 @@ for el1 in range(len(elementID)):
         elif bpointID2 == []:
             bpx1 = next(bpointID1[x] for x in range(len(bpointID1)) if bpointID1[x][3] == 1)[1]
             bpy1 = next(bpointID1[y] for y in range(len(bpointID1)) if bpointID1[y][3] == 1)[2]
+            cursorObj.execute("UPDATE GraphicElement SET SymCenterX =({0}) WHERE Element_ID IN ({1})".format(
+                str(ksize * (bpx1 + gtx2) / 2), str(elementID[el1])))
+            cursorObj.execute("UPDATE GraphicElement SET SymCenterY=({0}) WHERE Element_ID IN ({1})".format(
+                str(ksize * (bpy1 + gty2) / 2), str(elementID[el1])))
 
             # Вертикально
             if (bpx1 - gtx2) ** 2 < (bpy1 - gty2) ** 2:
@@ -196,6 +202,10 @@ for el1 in range(len(elementID)):
             bpy1 = next(bpointID1[y] for y in range(len(bpointID1)) if bpointID1[y][3] == 1)[2]
             bpx2 = next(bpointID2[x] for x in range(len(bpointID2)) if bpointID2[x][3] == 1)[1]
             bpy2 = next(bpointID2[y] for y in range(len(bpointID2)) if bpointID2[y][3] == 1)[2]
+            cursorObj.execute("UPDATE GraphicElement SET SymCenterX=({0}) WHERE Element_ID IN ({1})".format(
+                str(ksize * (bpx1 + bpx2) / 2), str(elementID[el1])))
+            cursorObj.execute("UPDATE GraphicElement SET SymCenterY=({0}) WHERE Element_ID IN ({1})".format(
+                str(ksize * (bpy1 + bpy2) / 2), str(elementID[el1])))
 
             # Вертикально
             if (bpx1 - bpx2) ** 2 < (bpy1 - bpy2) ** 2:
@@ -223,13 +233,11 @@ nodeID = name_changer(nodeID)
 print('BUSBARS: ', nodeID)
 
 for i in range(len(nodeID)):
-
-
     nterminalID = cursorObj.execute(
         "SELECT TerminalNo, Terminal_ID FROM Terminal WHERE Node_ID IN ({0})".format(
             str(nodeID[i]))).fetchall()
     try:
-        l = next(nterminalID for y in range(len(nterminalID)) if nterminalID[y][0] == 1)
+        l = next('not error' for y in range(len(nterminalID)) if nterminalID[y][0] == 1)
         continue
     except:
         print(nterminalID, '- КОНЕЧНЫЙ БУСБАР')
@@ -243,12 +251,21 @@ for i in range(len(nodeID)):
             str(nodeID[i]))).fetchone()
     print(gnodeID)
     # Надпись справа
-    if (gnodeID[1] - gnodeID[3])**2 > (gnodeID[2] - gnodeID[4])**2:
-        kx = 0.0025
-        ky = 0
-    elif (gnodeID[1] - gnodeID[3])**2 < (gnodeID[2] - gnodeID[4])**2:
-        kx = 0
-        ky = 0.0025
+    if (gnodeID[1] - gnodeID[3]) ** 2 > (gnodeID[2] - gnodeID[4]) ** 2:
+        if gnodeID[1] > gnodeID[3]:
+            kx = 0.0025
+            ky = 0
+        elif gnodeID[1] < gnodeID[3]:
+            kx = gnodeID[3] - gnodeID[1] + 0.0025
+            ky = 0
+    elif (gnodeID[1] - gnodeID[3]) ** 2 < (gnodeID[2] - gnodeID[4]) ** 2:
+        if gnodeID[2] > gnodeID[4]:
+            kx = 0
+            ky = 0.0025
+        if gnodeID[2] < gnodeID[4]:
+            kx = 0
+            ky = 0.0025 + gnodeID[4] - gnodeID[2]
+
     cursorObj.execute("UPDATE GraphicText SET Pos1=({0}) WHERE GraphicText_ID IN ({1})".format(str(kx), str(gnodeID[5])))
     cursorObj.execute("UPDATE GraphicText SET Pos2=({0}) WHERE GraphicText_ID IN ({1})".format(str(ky), str(gnodeID[5])))
 
