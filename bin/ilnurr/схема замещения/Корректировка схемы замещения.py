@@ -245,34 +245,142 @@ for i in range(len(nodeID)):
         cursorObj.execute("DELETE FROM GraphicNode WHERE Node_ID IN ({0})".format(str(nodeID[i])))
         continue
 
-    gnodeID = cursorObj.execute(
-        "SELECT GraphicNode_ID, NodeStartX, NodeStartY, NodeEndX, NodeEndY, GraphicText_ID1 "
-        "FROM GraphicNode WHERE Node_ID IN ({0})".format(
-            str(nodeID[i]))).fetchone()
-    print(gnodeID)
-    # Надпись справа
-    if (gnodeID[1] - gnodeID[3]) ** 2 > (gnodeID[2] - gnodeID[4]) ** 2:
-        if gnodeID[1] > gnodeID[3]:
-            kx = 0.0025
-            ky = 0
-        elif gnodeID[1] < gnodeID[3]:
-            kx = gnodeID[3] - gnodeID[1] + 0.0025
-            ky = 0
-    elif (gnodeID[1] - gnodeID[3]) ** 2 < (gnodeID[2] - gnodeID[4]) ** 2:
-        if gnodeID[2] > gnodeID[4]:
-            kx = 0
-            ky = 0.0025
-        if gnodeID[2] < gnodeID[4]:
-            kx = 0
-            ky = 0.0025 + gnodeID[4] - gnodeID[2]
+    for i1 in range(len(nterminalID)):
+        chNodeID2 = nodeID[i]
+        chTerminalID2 = nterminalID[i1]
+        chGTerminalID2 = cursorObj.execute(
+            "SELECT GraphicTerminal_ID, PosX, PosY FROM GraphicTerminal WHERE Terminal_ID IN ({0})".format(
+                str(chTerminalID2[1]))).fetchall()[0]
+        chElementID = cursorObj.execute(
+            "SELECT Element_ID FROM Terminal WHERE Terminal_ID IN ({0})".format(
+                str(chTerminalID2[1]))).fetchone()[0]
+        chGElementID = cursorObj.execute(
+            "SELECT GraphicElement_ID, SymCenterX, SymCenterY FROM GraphicElement WHERE GraphicElement_ID IN ({0})".format(
+                str(chElementID))).fetchall()[0]
+        chTerminalID1 = cursorObj.execute(
+            "SELECT Terminal_ID FROM Terminal WHERE TerminalNo='1' AND Element_ID IN ({0})".format(
+                str(chElementID))).fetchone()[0]
+        chGTerminalID1 = cursorObj.execute(
+            "SELECT GraphicTerminal_ID, PosX, PosY FROM GraphicTerminal WHERE Terminal_ID IN ({0})".format(
+                str(chTerminalID1))).fetchall()[0]
 
-    cursorObj.execute("UPDATE GraphicText SET Pos1=({0}) WHERE GraphicText_ID IN ({1})".format(str(kx), str(gnodeID[5])))
-    cursorObj.execute("UPDATE GraphicText SET Pos2=({0}) WHERE GraphicText_ID IN ({1})".format(str(ky), str(gnodeID[5])))
+        gnodeID = cursorObj.execute(
+            "SELECT GraphicNode_ID, NodeStartX, NodeStartY, NodeEndX, NodeEndY, GraphicText_ID1 "
+            "FROM GraphicNode WHERE Node_ID IN ({0})".format(
+                str(nodeID[i]))).fetchall()[0]
+        print(gnodeID)
+
+        # Надпись справа
+        if (gnodeID[1] - gnodeID[3]) ** 2 > (gnodeID[2] - gnodeID[4]) ** 2:
+            # Смотрит вверх
+            if gnodeID[1] > gnodeID[3]:
+
+                cursorObj.execute(
+                    "UPDATE GraphicTerminal SET PosX=({0}) WHERE GraphicTerminal_ID IN ({1})".format(
+                        str(chGTerminalID1[1]), str(chGTerminalID2[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicTerminal SET PosY=({0}) WHERE GraphicTerminal_ID IN ({1})".format(
+                        str(chGTerminalID1[2] + 0.2), str(chGTerminalID2[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicElement SET SymCenterX=({0}) WHERE GraphicElement_ID IN ({1})".format(
+                        str(chGTerminalID1[1]), str(chGElementID[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicElement SET SymCenterY = ({0}) WHERE GraphicElement_ID IN ({1})".format(
+                        str(chGTerminalID1[2] + 0.1), str(chGElementID[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicNode SET NodeStartX = ({0}) AND NodeEndX = ({1}) "
+                    "WHERE GraphicNode_ID IN ({2})".format(
+                        str(chGTerminalID1[1] - 0.02), str(chGTerminalID1[1] + 0.02), str(gnodeID[i])))
+                cursorObj.execute(
+                    "UPDATE GraphicNode SET NodeStartY = ({0}) AND NodeEndY = ({1}) "
+                    "WHERE GraphicNode_ID IN ({2})".format(
+                        str(chGTerminalID1[2] + 0.2), str(chGTerminalID1[2] + 0.2), str(gnodeID[i])))
+                kx = 0.0025
+                ky = 0
+
+            # Смотрит вниз
+            elif gnodeID[1] < gnodeID[3]:
+                cursorObj.execute(
+                    "UPDATE GraphicTerminal SET PosX=({0}) WHERE GraphicTerminal_ID IN ({1})".format(
+                        str(chGTerminalID1[1]), str(chGTerminalID2[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicTerminal SET PosY=({0}) WHERE GraphicTerminal_ID IN ({1})".format(
+                        str(chGTerminalID1[2] + 0.2), str(chGTerminalID2[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicElement SET SymCenterX=({0}) WHERE GraphicElement_ID IN ({1})".format(
+                        str(chGTerminalID1[1]), str(chGElementID[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicElement SET SymCenterY = ({0}) WHERE GraphicElement_ID IN ({1})".format(
+                        str(chGTerminalID1[2] + 0.1), str(chGElementID[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicNode SET NodeStartX = ({0}) AND NodeEndX = ({1}) "
+                    "WHERE GraphicNode_ID IN ({2})".format(
+                        str(chGTerminalID1[1] - 0.02), str(chGTerminalID1[1] + 0.02), str(gnodeID[i])))
+                cursorObj.execute(
+                    "UPDATE GraphicNode SET NodeStartY = ({0}) AND NodeEndY = ({1}) "
+                    "WHERE GraphicNode_ID IN ({2})".format(
+                        str(chGTerminalID1[1] + 0.2), str(chGTerminalID1[1] + 0.2), str(gnodeID[i])))
+                kx = gnodeID[3] - gnodeID[1] + 0.0025
+                ky = 0
+
+        elif (gnodeID[1] - gnodeID[3]) ** 2 < (gnodeID[2] - gnodeID[4]) ** 2:
+            # Смотрит вправо
+            if gnodeID[2] > gnodeID[4]:
+                cursorObj.execute(
+                    "UPDATE GraphicTerminal SET PosX=({0}) WHERE GraphicTerminal_ID IN ({1})".format(
+                        str(chGTerminalID1[1] + 0.2), str(chGTerminalID2[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicTerminal SET PosY=({0}) WHERE GraphicTerminal_ID IN ({1})".format(
+                        str(chGTerminalID1[2]), str(chGTerminalID2[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicElement SET SymCenterX=({0}) WHERE GraphicElement_ID IN ({1})".format(
+                        str(chGTerminalID1[1] + 0.1), str(chGElementID[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicElement SET SymCenterY = ({0}) WHERE GraphicElement_ID IN ({1})".format(
+                        str(chGTerminalID1[2]), str(chGElementID[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicNode SET NodeStartX = ({0}) AND NodeEndX = ({1}) "
+                    "WHERE GraphicNode_ID IN ({2})".format(
+                        str(chGTerminalID1[1] + 0.2), str(chGTerminalID1[1] + 0.2), str(gnodeID[i])))
+                cursorObj.execute(
+                    "UPDATE GraphicNode SET NodeStartY = ({0}) AND NodeEndY = ({1}) "
+                    "WHERE GraphicNode_ID IN ({2})".format(
+                        str(chGTerminalID1[2] - 0.02), str(chGTerminalID1[2] + 0.02), str(gnodeID[i])))
+
+                kx = 0
+                ky = 0.0025
+
+            # Смотрит влево
+            if gnodeID[2] < gnodeID[4]:
+                cursorObj.execute(
+                    "UPDATE GraphicTerminal SET PosX=({0}) WHERE GraphicTerminal_ID IN ({1})".format(
+                        str(chGTerminalID1[1] - 0.2), str(chGTerminalID2[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicTerminal SET PosY=({0}) WHERE GraphicTerminal_ID IN ({1})".format(
+                        str(chGTerminalID1[2]), str(chGTerminalID2[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicElement SET SymCenterX=({0}) WHERE GraphicElement_ID IN ({1})".format(
+                        str(chGTerminalID1[1] - 0.1), str(chGElementID[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicElement SET SymCenterY = ({0}) WHERE GraphicElement_ID IN ({1})".format(
+                        str(chGTerminalID1[2]), str(chGElementID[0])))
+                cursorObj.execute(
+                    "UPDATE GraphicNode SET NodeStartX = ({0}) AND NodeEndX = ({1}) "
+                    "WHERE GraphicNode_ID IN ({2})".format(
+                        str(chGTerminalID1[1] - 0.2), str(chGTerminalID1[1] + 0.2), str(gnodeID[i])))
+                cursorObj.execute(
+                    "UPDATE GraphicNode SET NodeStartY = ({0}) AND NodeEndY = ({1}) "
+                    "WHERE GraphicNode_ID IN ({2})".format(
+                        str(chGTerminalID1[1] + 0.02), str(chGTerminalID1[1] - 0.02), str(gnodeID[i])))
+                kx = 0
+                ky = 0.0025 + gnodeID[4] - gnodeID[2]
+
+        cursorObj.execute("UPDATE GraphicText SET Pos1=({0}) WHERE GraphicText_ID IN ({1})".format(str(kx), str(gnodeID[5])))
+        cursorObj.execute("UPDATE GraphicText SET Pos2=({0}) WHERE GraphicText_ID IN ({1})".format(str(ky), str(gnodeID[5])))
 
     # ngterminalID = cursorObj.execute(
     #     "SELECT GraphicTerminal_ID, PosX, PosY FROM GraphicTerminal WHERE Terminal_ID IN ({0})".format(
     #         str(nterminalID[0][1]))).fetchone()[0]
-
 
 
 

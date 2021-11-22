@@ -83,7 +83,8 @@ for i in range(len(coord_gnode)):
             str(coord_gnode[i][4] * ksize), str(coord_gnode[i][0]), str(coord_gnode[i][5])))
 
 
-coord_gterminal = cursorObj.execute("SELECT GraphicTerminal_ID, PosX, PosY, Variant_ID FROM GraphicTerminal").fetchall()
+coord_gterminal = cursorObj.execute(
+    "SELECT GraphicTerminal_ID, PosX, PosY, Variant_ID FROM GraphicTerminal").fetchall()
 for i in range(len(coord_gterminal)):
     cursorObj.execute(
         "UPDATE GraphicTerminal SET PosX=({0}) WHERE GraphicTerminal_ID IN ({1}) AND Variant_ID IN ({2})".format(
@@ -228,7 +229,8 @@ for el1 in range(len(elementID)):
         cursorObj.execute("UPDATE GraphicText SET Pos1=({0}) WHERE GraphicText_ID IN ({1})".format(str(kx), str(gtext)))
         cursorObj.execute("UPDATE GraphicText SET Pos2=({0}) WHERE GraphicText_ID IN ({1})".format(str(ky), str(gtext)))
         print('BPOINT:', bpointID1, bpointID2)
-nodeID = cursorObj.execute("SELECT Node_ID FROM GraphicNode WHERE NodeStartX!=NodeEndX OR NodeStartY!=NodeEndY").fetchall()
+nodeID = cursorObj.execute(
+    "SELECT Node_ID FROM GraphicNode WHERE NodeStartX!=NodeEndX OR NodeStartY!=NodeEndY").fetchall()
 nodeID = name_changer(nodeID)
 print('BUSBARS: ', nodeID)
 
@@ -266,17 +268,31 @@ for i in range(len(nodeID)):
             kx = 0
             ky = 0.0025 + gnodeID[4] - gnodeID[2]
 
-    cursorObj.execute("UPDATE GraphicText SET Pos1=({0}) WHERE GraphicText_ID IN ({1})".format(str(kx), str(gnodeID[5])))
-    cursorObj.execute("UPDATE GraphicText SET Pos2=({0}) WHERE GraphicText_ID IN ({1})".format(str(ky), str(gnodeID[5])))
+    cursorObj.execute(
+        "UPDATE GraphicText SET Pos1=({0}) WHERE GraphicText_ID IN ({1})".format(str(kx), str(gnodeID[5])))
+    cursorObj.execute(
+        "UPDATE GraphicText SET Pos2=({0}) WHERE GraphicText_ID IN ({1})".format(str(ky), str(gnodeID[5])))
 
-    # ngterminalID = cursorObj.execute(
-    #     "SELECT GraphicTerminal_ID, PosX, PosY FROM GraphicTerminal WHERE Terminal_ID IN ({0})".format(
-    #         str(nterminalID[0][1]))).fetchone()[0]
-
-
-
-
-input('SAVE')
+    """
+    ФИКС ПРЕДКОНЕЧНОШИННЫХ ЭЛЕМЕНТОВ
+    """
+    for i1 in range(len(nterminalID)):
+        chNodeID2 = nodeID[i]
+        chTerminalID2 = nterminalID[i1]
+        chGTerminalID2 = cursorObj.execute(
+            "SELECT GraphicTerminal_ID, PosX, PosY FROM GraphicTerminal WHERE Terminal_ID IN ({0})".format(
+                str(chTerminalID2))).fetchone()[0]
+        chElementID = cursorObj.execute(
+            "SELECT Element_ID FROM Terminal WHERE Terminal_ID IN ({0})".format(
+                str(chTerminalID2))).fetchone()[0]
+        chTerminalID1 = cursorObj.execute(
+            "SELECT Terminal_ID FROM Terminal WHERE TerminalNo='1' AND Element_ID IN ({0})".format(
+                str(chElementID))).fetchone()[0]
+        chGTerminalID1 = cursorObj.execute(
+            "SELECT GraphicTerminal_ID, PosX, PosY FROM GraphicTerminal WHERE Terminal_ID IN ({0})".format(
+                str(chTerminalID1))).fetchone()[0]
+        print(chGTerminalID1, chGTerminalID2, chElementID, chNodeID2)
+        input('SAVE')
 con.commit()
 con.close()
 
