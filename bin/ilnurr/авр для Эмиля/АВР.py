@@ -110,9 +110,7 @@ while i < len(nodeID) - 1:
             if HVBusbarName == 'РП-8-2':
                 BusbarName = 'ТП-113 Н-2'
                 BusbarName2 = 'ТП-113 Н-1'
-            if HVBusbarName == 'РП-10-1' or HVBusbarName == 'РП-11-1' or HVBusbarName == 'ТП-92-1':     # HVBusbarName == 'ТП-224-2' or HVBusbarName == 'ТП-6003-2' or HVBusbarName == 'ТП-114-2' or HVBusbarName == 'ТП-1081-2'
-                continue
-            if HVBusbarName.split('-')[-1][0] == '2':
+            if HVBusbarName == 'РП-10-1' or HVBusbarName == 'РП-11-1' or HVBusbarName == 'ТП-92-1' or HVBusbarName == 'ТП-224-2' or HVBusbarName == 'ТП-6003-2' or HVBusbarName == 'ТП-114-2' or HVBusbarName == 'ТП-1081-2':     # HVBusbarName == 'ТП-224-2' or HVBusbarName == 'ТП-6003-2' or HVBusbarName == 'ТП-114-2' or HVBusbarName == 'ТП-1081-2'
                 continue
 
             print(BusbarName, BusbarName2, k)

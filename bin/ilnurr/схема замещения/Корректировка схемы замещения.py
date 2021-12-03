@@ -58,8 +58,8 @@ print(nodeID)
 # ec.nodes_texts.cursorObj = cursorObj
 # ec.nodes_texts.variantID = variantID
 ec.nodes_texts(nodeID, cursorObj, variantID)     # Расстановка узлов
-# ec.centrovka(elementID, cursorObj, variantID)          # Центровка символов элемента
-# ec.size(ksize, cursorObj, variantID)                # Увеличение схемы
+ec.centrovka(elementID, cursorObj, variantID)          # Центровка символов элемента
+ec.size(ksize, cursorObj, variantID)                # Увеличение схемы
 
 input('SAVE')
 con.commit()
