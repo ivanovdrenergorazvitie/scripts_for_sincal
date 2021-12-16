@@ -51,6 +51,8 @@ L_ID = 0
 # TransID = 1
 gnodeerror = []
 for osn1 in range(len(AreaID)):
+    if AreaID[osn1] != 15 and AreaID[osn1] != 16:
+        continue
     # if AreaID[osn1] != 111:
     #     continue
     print('\n\n\n\nПЕРЕХОД К ВИДУ ' + str(AreaID[osn1]))

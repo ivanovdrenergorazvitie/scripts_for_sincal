@@ -43,7 +43,8 @@ ParentAreaID = AreaID0[:1]
 print('Список видов: ' + str(AreaID) + '; Вид исходника: ' + str(ParentAreaID))
 
 for i1 in range(len(AreaID)):
-
+    if AreaID[i1] != 15 and AreaID[i1] != 16:
+        continue
     GTerminalID = cursorObj.execute(
         "SELECT GraphicTerminal_ID FROM GraphicAddTerminal WHERE GraphicArea_ID IN ({0})".format(
             str(AreaID[i1]))).fetchall()
