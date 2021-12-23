@@ -184,4 +184,5 @@ while True:                             # The Event Loop
 
         con.commit()  # подтверждаем изменения в БД
         con.close()
+        print("Процесс завершен успешно. Измениния сохранены.")
 
