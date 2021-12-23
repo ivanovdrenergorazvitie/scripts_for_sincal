@@ -86,9 +86,9 @@ while True:                             # The Event Loop
     if event in (None, 'Exit', 'Cancel'):
         break
     if event in ('Submit'):
-        path_db = values[0]
-        path_mdb = values[1]
-        in_data = values[2]
+        path_db = re.findall('.+:\/.+\.+.', values[0])
+        path_mdb = re.findall('.+:\/.+\.+.', values[1])
+        in_data = re.findall('.+:\/.+\.+.', values[2])
         trans = values[3]
         tr_s = values[4]
         vniz = values[5]
