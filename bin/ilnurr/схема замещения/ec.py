@@ -122,6 +122,8 @@ def centrovka(elementID, cursorObj, variantID):
                 if gelementID != None:
                     gelementID = gelementID[0]
                     break
+            if gelementID == None:
+                continue
             gtext = cursorObj.execute(
                 "SELECT GraphicText_ID1 FROM GraphicElement WHERE GraphicElement_ID IN ({0})".format(
                     str(gelementID))).fetchone()[0]
@@ -182,8 +184,9 @@ def size(ksize, cursorObj, variantID):
 
 
 def nodes_texts(nodeID, cursorObj, variantID):
-    print('\n\n\n\n РАССТАНОВКА УЗЛОВ И ТЕКСТА')
-    for i in range(len(nodeID)):
+    print('\n\n\n\n РАССТАНОВКА УЗЛОВ И ТЕКСТА', len(nodeID), '\n\n')
+    i = 0
+    while i < len(nodeID):
         ff7 = 1
         nterminalID = cursorObj.execute(
             "SELECT TerminalNo, Terminal_ID FROM Terminal WHERE Node_ID IN ({0})".format(
@@ -196,6 +199,8 @@ def nodes_texts(nodeID, cursorObj, variantID):
             print(nterminalID, '- КОНЕЧНЫЙ БУСБАР')
         if nterminalID == []:
             cursorObj.execute("DELETE FROM GraphicNode WHERE Node_ID IN ({0})".format(str(nodeID[i])))
+            cursorObj.execute("DELETE FROM Node WHERE Node_ID IN ({0})".format(str(nodeID[i])))
+            cursorObj.execute("DELETE FROM Terminal WHERE Node_ID IN ({0})".format(str(nodeID[i])))
             continue
 
         for i1 in range(len(nterminalID)):
@@ -204,9 +209,16 @@ def nodes_texts(nodeID, cursorObj, variantID):
             chGTerminalID2 = cursorObj.execute(
                 "SELECT GraphicTerminal_ID, PosX, PosY FROM GraphicTerminal WHERE Terminal_ID IN ({0})".format(
                     str(chTerminalID2[1]))).fetchall()[0]
+            print('Gterminal', chGTerminalID2)
             chElementID = cursorObj.execute(
                 "SELECT Element_ID FROM Terminal WHERE Terminal_ID IN ({0})".format(
                     str(chTerminalID2[1]))).fetchone()[0]
+            print('Element', chElementID)
+            print('\nЭТАП 1 \n')
+            # if cursorObj.execute(f"SELECT Type FROM Element WHERE Element_ID IN ({chElementID})").fetchone()[0] != 'SerialRLCCircuit' or 'Infeeder':
+            #     i += 1
+            #     continue
+            print('\nЭТАП 2 \n')
             chGElementID = cursorObj.execute(
                 "SELECT GraphicElement_ID, SymCenterX, SymCenterY FROM GraphicElement WHERE GraphicElement_ID IN ({0})".format(
                     str(chElementID))).fetchall()[0]
@@ -367,6 +379,7 @@ def nodes_texts(nodeID, cursorObj, variantID):
                                 str(chGTerminalID1[2] - 0.002), str(gnodeID[0])))
                     kx = 0
                     ky = 0.0025 + gnodeID[4] - gnodeID[2]
+            i += 1
             print(kx, ky, gnodeID[5])
             cursorObj.execute(
                 "UPDATE GraphicText SET Pos1=({0}) WHERE GraphicText_ID IN ({1})".format(str(kx), str(gnodeID[5])))
