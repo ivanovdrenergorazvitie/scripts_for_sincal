@@ -20,7 +20,6 @@ def get_coordinates_value(b, cursorObj):
             nodeForCoords += [b[gtc1][0][0]]
         except:
             continue
-    print(nodeForCoords, '- nodeForCoords')
     #   ---- Составление списка параметров Терминала выбранных узлов
     line0 = []
     for gtc2 in range(len(nodeForCoords) + 1):
@@ -30,7 +29,6 @@ def get_coordinates_value(b, cursorObj):
                     str(nodeForCoords[gtc2]))).fetchall()]
         except:
             continue
-    print(line0, '- line0')
     #   ---- Вывод из тройного списка: line0[[(), ()], [(), ()], [()]] -> line1[(), (), (), (), ()]
     line1 = []
     for gtc3i in range(len(line0) + 1):
@@ -40,7 +38,6 @@ def get_coordinates_value(b, cursorObj):
                 print(gtc3i, gtc3j, '- line1 checking')
         except:
             continue
-    print(line1, '- line1')
     #   ---- Отсеивание секционника
     line = []
     line2 = []
@@ -59,7 +56,6 @@ def get_coordinates_value(b, cursorObj):
                 line += [line2[gtc5]]
         except:
             continue
-    print(line, '- line')
 
     # Part 2 (составление того же line1 только без секционников)
     lineList = []
@@ -73,7 +69,6 @@ def get_coordinates_value(b, cursorObj):
             while gtc6 != line1[m1][1]:
                 m1 += 1
             lineList += [line1[m1]]
-    print(lineList, '- lineList')
     #   ---- Определение терминалов конца линии
     lT_ID1 = []
     for gtc7 in range(len(lineList) + 1):
@@ -81,7 +76,6 @@ def get_coordinates_value(b, cursorObj):
             lT_ID1 += [lineList[gtc7][0]]
         except:
             continue
-    print(lT_ID1, '- lT_ID1')
     # ---- Составление списка терминалов линии по ID Терминала...
     # lT1 - это как lineList, только не в таблице Terminal, а в таблице GraphicTerminal
     lT1 = []
@@ -92,7 +86,6 @@ def get_coordinates_value(b, cursorObj):
                     str(lT_ID1[gtc8]))).fetchone()]
         except:
             continue
-    print(lT1, '- lT1')
     #   ---- Составление списка ID Терминалов в конце линии
     lT = []
     for gtc9 in range(len(lT1) + 1):
@@ -100,38 +93,10 @@ def get_coordinates_value(b, cursorObj):
             lT += [lT1[gtc9][1]]
         except:
             continue
-    print('lT:', lT)
     pl_elem.line = line
     pl_elem.lineList = lineList
     pl_elem.lT1 = lT1
-    print()
-    # #   ---- Отсеивание терминалов в начале линии (не пригодилось)
-    # lT = []
-    # # Part 1
-    # for lt in range(len(lT1)):
-    #     lT2 = lT1[lt]
-    #     print(lT2)
-    #     i += 1
-    #     try:
-    #         if lT2[1] == lT1[i][1]:
-    #             lT += [lT2[1]]
-    #     except:
-    #         continue
-    #
-    # print(lT, '- lT')
-    # # Part 2
-    # lTList = []
-    # mti = 0
-    # for mt in lT:
-    #     if mt == lT1[mti][1]:
-    #         lTList += [lT1[mti]]
-    #         mti += 1
-    #     else:
-    #         mt1 = mti
-    #         while mt != lT1[mt1][1]:
-    #             mt1 += 1
-    #         lTList += [lT1[mt1]]
-    # print(lTList, '- lTList')
+
 def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
     global node_x, node_y, trans_x, trans_y, load_x, load_y
     #   ---- ---- ДАННЫЕ
@@ -151,7 +116,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
     if nodeY1 > nodeY2:
         oldNodeStart_y = nodeY2
         oldNodeEnd_y = nodeY1
-    print('nodes coords:', round(oldNodeEnd_y, 6), round(oldNodeEnd_x, 6), round(oldNodeStart_y, 6), round(oldNodeStart_x, 6), '- y2, x2, y1, x1')
 
     #   ---- Параметры центра линии
     line_x = cursorObj.execute(
@@ -162,7 +126,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
             str(line[i - 1]))).fetchone()
     line_x = line_x[0]
     line_y = line_y[0]
-    print('line_x and line_y: ', round(line_x, 6), round(line_y, 6))
     #   ---- Параметры координат терминала конца линии
     oldTerminal_x = cursorObj.execute(
         "SELECT PosX FROM GraphicTerminal WHERE GraphicTerminal_ID IN ({0})".format(
@@ -185,7 +148,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
                 if round(oldNodeStart_x, 6) == round(oldNodeEnd_x, 6) and round(oldNodeStart_y, 6) != round(oldNodeEnd_y, 6):
                     if buchlePoint_y > oldTerminal_y:
                         #   ---- Вниз
-                        print('Вниз')
                         trans_x = round(oldNodeStart_x + (oldNodeEnd_x - oldNodeStart_x) * k / j, 4)
                         trans_y = round(oldNodeEnd_y - 0.0075, 4)
                         node_x = trans_x
@@ -194,7 +156,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
                         load_y = round(oldNodeEnd_y - 0.013, 4)
                     elif buchlePoint_y < oldTerminal_y:
                         #   ---- Вверх
-                        print('Вверх')
                         trans_x = round(oldNodeStart_x + (oldNodeEnd_x - oldNodeStart_x) * k / j, 4)
                         trans_y = round(oldNodeEnd_y + 0.0075, 4)
                         node_x = trans_x
@@ -204,7 +165,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
                 elif round(oldNodeStart_y, 6) == round(oldNodeEnd_y, 6) and round(oldNodeStart_x, 6) != round(oldNodeEnd_x, 6):
                     if buchlePoint_x < oldTerminal_x:
                         #   ---- Вправо
-                        print('Вправо')
                         trans_x = round(oldNodeEnd_x + 0.0075, 4)
                         trans_y = round(oldNodeStart_y + (oldNodeEnd_y - oldNodeStart_y) * k / j, 4)
                         node_x = round(oldNodeEnd_x + 0.011, 4)
@@ -213,7 +173,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
                         load_y = trans_y
                     elif buchlePoint_x > oldTerminal_x:
                         #   ---- Влево
-                        print('Влево')
                         trans_x = round(oldNodeEnd_x - 0.0075, 4)
                         trans_y = round(oldNodeStart_y + (oldNodeEnd_y - oldNodeStart_y) * k / j, 4)
                         node_x = round(oldNodeEnd_x - 0.011, 4)
@@ -225,7 +184,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
                 if round(oldNodeStart_y, 6) == round(oldNodeEnd_y, 6) and round(oldNodeStart_x, 6) != round(oldNodeEnd_x, 6):
                     if line_y > oldTerminal_y:
                         #   ---- Вниз
-                        print('Вниз')
                         trans_x = round(oldNodeStart_x + (oldNodeEnd_x - oldNodeStart_x) * k / j, 4)
                         trans_y = round(oldNodeEnd_y - 0.0075, 4)
                         node_x = trans_x
@@ -234,7 +192,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
                         load_y = round(oldNodeEnd_y - 0.013, 4)
                     elif line_y < oldTerminal_y:
                         #   ---- Вверх
-                        print('Вверх')
                         trans_x = round(oldNodeStart_x + (oldNodeEnd_x - oldNodeStart_x) * k / j, 4)
                         trans_y = round(oldNodeEnd_y + 0.0075, 4)
                         node_x = trans_x
@@ -244,7 +201,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
                 elif round(oldNodeStart_x, 6) == round(oldNodeEnd_x, 6) and round(oldNodeStart_y, 6) != round(oldNodeEnd_y, 6):
                     if line_x < oldTerminal_x:
                         #   ---- Вправо
-                        print('Вправо')
                         trans_x = round(oldNodeEnd_x + 0.0075, 4)
                         trans_y = round(oldNodeStart_y + (oldNodeEnd_y - oldNodeStart_y) * k / j, 4)
                         node_x = round(oldNodeEnd_x + 0.011, 4)
@@ -253,7 +209,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
                         load_y = trans_y
                     elif line_x > oldTerminal_x:
                         #   ---- Влево
-                        print('Влево')
                         trans_x = round(oldNodeEnd_x - 0.0075, 4)
                         trans_y = round(oldNodeStart_y + (oldNodeEnd_y - oldNodeStart_y) * k / j, 4)
                         node_x = round(oldNodeEnd_x - 0.011, 4)
@@ -261,7 +216,6 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
                         load_x = round(oldNodeEnd_x - 0.013, 4)
                         load_y = trans_y
         else:
-            print('Ручной выбор направления: Вниз')
             trans_x = round(oldNodeStart_x + (oldNodeEnd_x - oldNodeStart_x) * k / j, 4)
             trans_y = round(oldNodeEnd_y - 0.0075, 4)
             node_x = trans_x
@@ -269,16 +223,12 @@ def get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList):
             load_x = trans_x
             load_y = round(oldNodeEnd_y - 0.013, 4)
     except:
-        print('exc')
         trans_x = round(oldNodeStart_x + (oldNodeEnd_x - oldNodeStart_x) * k / j, 4)
         trans_y = round(oldNodeEnd_y - 0.0075, 4)
         node_x = trans_x
         node_y = round(oldNodeEnd_y - 0.011, 4)
         load_x = trans_x
         load_y = round(oldNodeEnd_y - 0.013, 4)
-    print('j:', j, ';  k:', k)
-    print('Координаты trans_x, trans_y, node_x, node_y, load_x, load_y:', trans_x, trans_y, node_x, node_y, load_x, load_y)
-    print()
 
     pl_tr.node_x = node_x
     pl_tr.node_y = node_y

@@ -1,24 +1,11 @@
 import sqlite3
-node = []
-spisok_yzlov_bez_ishodnyh_dannyh = []
-a = []
-i = 0
-cursorObj = 'simple text'
-VoltLevel_ID = []
-node_x = 0.0
-node_y = 0.0
-trans_x = 0.0
-trans_y = 0.0
-cursor = 'simple text'
-tr_s = []
-trans = []
-Max_Element_ID = 0
-Max_Node_ID = 0
-Max_Terminal_ID = 0
-Max_GraphicText_ID = 0
-Max_GraphicTerminal_ID = 0
-Max_GraphicElement_ID = 0
-Max_GraphicNode_ID = 0
+
+
+
+
+
+
+
 def pl_tr(k, j):
 
     #   ---- ---- ВВОД ПАРАМЕТРОВ
@@ -141,3 +128,6 @@ def pl_tr(k, j):
             str(Max_GraphicNode_ID + i), str(Max_GraphicText_ID + 8 * i - 5), str(Max_Node_ID + i),
             str(node_x), str(node_y),
             str(node_x), str(node_y)))
+
+
+

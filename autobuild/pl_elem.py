@@ -84,7 +84,6 @@ def pl_elem():
         except:
             return (a[i - 1][4])
     for k in range(1, j):
-        print('Т' + str(k))
         max_id(k)
         global_max_id()
         get_coordinates.get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList)
