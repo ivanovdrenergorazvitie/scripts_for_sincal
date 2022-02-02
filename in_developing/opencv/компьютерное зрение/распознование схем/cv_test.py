@@ -97,7 +97,7 @@ def grayscale_17_levels (image):
         if(low == 0 ):
             break
         # print(len(curr_mask[0]))
-image = cv2.imread('lin.jpg')
+image = cv2.imread('line.jpg')
 # viewImage(image)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 grayscale_17_levels(gray)
@@ -139,10 +139,11 @@ def get_area_of_each_gray_level(im):
     ret, threshold = cv2.threshold(image, low, 255, 0)
     contours, hirerchy = cv2.findContours(threshold,
                                           cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
-    print(len(contours[3]))
+    # print(len(contours[3]))
     # print(type((contours[1][0])))
     # print('hirerchy\n', hirerchy)
-    y = [j for j in (k[1] for k in (i[0] for i in contours[2]))]
+    y = [j for j in (k[0] for k in (i[0] for i in contours[1]))]
+    # a = [j for j in (k[0] for k in (i[0] for i in contours[1]))]
     a = [i for i in range(len(y))]
     print(y)
     plt.plot(a, y)
@@ -151,7 +152,7 @@ def get_area_of_each_gray_level(im):
     plt.show()
     plt.plot(moving_average(numpy.diff(y) / numpy.diff(a) ))
     plt.show()
-    print(moving_average(numpy.diff(y) / numpy.diff(a) ))
+    # print(moving_average(numpy.diff(y) / numpy.diff(a) ))
 
     if (len(contours) > 0):
         output.append([cv2.contourArea(contours[0])])
