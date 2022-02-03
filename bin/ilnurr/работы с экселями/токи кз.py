@@ -8,11 +8,11 @@ wb = load_workbook('чтобы смотреть.xlsx')
 zzzz = -1
 for sheet in wb.worksheets:
     zzzz += 1
-    if zzzz > 1:
-        continue
-    sheetName = str(sheet).split('"')[1]
-    # if sheetName != 'НД-66-НД-67 мин.':
+    # if zzzz > 1:
     #     continue
+    sheetName = str(sheet).split('"')[1]
+    if sheetName != 'СМ-1 2ой ПАРН' and sheetname != 'СМ-1 - СМ-3 (85) 2ой' and sheetname != 'СМ-3 - СМ-1 (86) 2ой':
+        continue
     ws = wb[sheetName]
     print('\n\n' + sheetName + '\n\n')
     i = 0

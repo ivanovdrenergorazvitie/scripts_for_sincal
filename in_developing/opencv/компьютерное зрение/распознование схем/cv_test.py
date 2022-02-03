@@ -1,114 +1,88 @@
-# import cv2 as cv
-#
-#
-# def viewImage(image, name_of_window):
-#     cv.namedWindow(name_of_window, cv.WINDOW_NORMAL)
-#     cv.imshow(name_of_window, image)
-#     cv.waitKey(0)
-#     cv.destroyAllWindows()
-#
-#
-# src = cv.imread('t.jpg')
-# gr = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
-# canny = cv.Canny(gr, 10, 250)
-# kernel = cv.getStructuringElement(cv.MORPH_RECT, (7, 7))
-# closed = cv.morphologyEx(canny, cv.MORPH_CLOSE, kernel)
-# contours = cv.findContours(closed.copy(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)[0]
-# # viewImage(contours, 'ds')
-# for cont in contours:
-#         #сглаживание и определение количества углов
-#         sm = cv.arcLength(cont, True)
-#         apd = cv.approxPolyDP(cont, 0.02*sm, True)
-#         #выделение контуров
-#         if len(apd) == 9:
-#             cv.drawContours(src, [apd], -1, (0,255,0), 4)
-# cv.imwrite('result.jpg', src)
 
 import numpy
-import cv2 #as cv
+import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 import os
-# def viewImage(image):
-#     cv.namedWindow('Display', cv.WINDOW_KEEPRATIO)
-#     cv.imshow('Display', image)
-#     cv.waitKey(0)
-#     cv.destroyAllWindows()
-# # 2. Сопоставьте несколько объектов
-# img_rgb = cv.imread('result.jpg')
-# img_gray = cv.cvtColor(img_rgb, cv.COLOR_BGR2GRAY)
-# ret, threshold_image = cv.threshold(img_gray, 127, 255, cv.THRESH_BINARY)
-# template = cv.imread('node.jpg', 0)
-# h, w = template.shape[:2]
-#
-# center = (w // 2, h // 2)
-# # res = cv.matchTemplate(img_gray, template, cv.TM_CCOEFF_NORMED)
-# # res = [res]
-# for i in range(1):
-#     M = cv.getRotationMatrix2D(center, 90, 1.0)
-#     template = cv.warpAffine(template, M, (w, h))
-#     res = cv.matchTemplate(img_gray, template, cv.TM_CCOEFF_NORMED)
-#     threshold = 0.85
-#     print(len(res[1]))
-#     print((res[1]))
-#     # print(img_gray)
-#     # Возьмем координаты со степенью совпадения больше% 80
-#     loc = np.where(res >= threshold)
-#     # print(loc)
-#     print(type(loc))
-#     # print(zip(*loc[::-1]))
-#     for pt in zip(*loc[::-1]):  # * Обозначает необязательные параметры
-#         bottom_right = (pt[0] + w, pt[1] + h)
-#         cv.rectangle(img_rgb, pt, bottom_right, (255, 255, 255), -1)
-#     # print(img_rgb)
-#
-#     cv.imshow('img_rgb', img_rgb)
-#     cv.waitKey(0)
-#     cv.destroyAllWindows()
-# f = open('1.txt','w')
-# # count = 0
-# for i in threshold_image:
-#     for j in i:
-#         f.write(str(j) + '\n')
-#         # count += 1
-#     f.write('\n')
-# f.close()
-# # cv.imshow('img_rgb', threshold_image)
-# cv.waitKey(0)
-# cv.destroyAllWindows()
-
-
-
 def viewImage(image):
     cv2.namedWindow('Display', cv2.WINDOW_NORMAL)
-    cv2.imshow('Display', image)
+    # cv2.imshow('Display', image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-def grayscale_17_levels (image):
-    high = 255
-    while(1):
-        low = high - 15
-        col_to_be_changed_low = np.array([low])
-        col_to_be_changed_high = np.array([high])
-        curr_mask = cv2.inRange(gray, col_to_be_changed_low,col_to_be_changed_high)
-        gray[curr_mask > 0] = (high)
-        # print(curr_mask > 0)
-        high -= 15
-        if(low == 0 ):
-            break
-        # print(len(curr_mask[0]))
-image = cv2.imread('line.jpg')
-# viewImage(image)
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-grayscale_17_levels(gray)
-# viewImage(gray)
 
-def get_name_of_templates():
-    filenames = []
-    for root, dirs, files in os.walk("."):
-        filenames.append(files)
-    return filenames
+# 2. Сопоставьте несколько объектов
+img_rgb = cv2.imread('result.jpg')
+img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+ret, threshold_image = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
+template = cv2.imread('node.jpg', 0)
 
+h, w = template.shape[:2]
+center = (w // 2, h // 2)
+res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+# res = [res]
+for i in range(1):
+    M = cv2.getRotationMatrix2D(center, i*90, 1.0)
+    template = cv2.warpAffine(template, M, (w, h))
+    res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+    threshold = 0.85
+    # print(len(res[1]))
+    # print((res[1]))
+    # print(img_gray)
+    # Возьмем координаты со степенью совпадения больше% 80
+    loc = np.where(res >= threshold)
+    # print(loc)
+    asj = []
+    # print(zip(*loc[::-1]))
+    for pt in zip(*loc[::-1]):  # * Обозначает необязательные параметры
+        bottom_right = (pt[0] + w, pt[1] + h)
+        cv2.rectangle(img_rgb, pt, bottom_right, (0, 0, 255), 1)
+        # print(pt)
+        asj.append(pt)
+
+    # cv2.imshow('img_rgb', img_rgb)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+f = open('1.txt','w')
+count = 0
+
+print(asj, len(asj))
+for i in threshold_image:
+    for j in i:
+        f.write(str(j) + '\n')
+        # count += 1
+    f.write('\n')
+f.close()
+# cv2.imshow('img_rgb', threshold_image)
+cv2.waitKey(0)
+
+
+
+cv2.destroyAllWindows()
+# def grayscale_17_levels (image):
+#     high = 255
+#     while(1):
+#         low = high - 15
+#         col_to_be_changed_low = np.array([low])
+#         col_to_be_changed_high = np.array([high])
+#         curr_mask = cv2.inRange(gray, col_to_be_changed_low,col_to_be_changed_high)
+#         gray[curr_mask > 0] = (high)
+#         # print(curr_mask > 0)
+#         high -= 15
+#         if(low == 0 ):
+#             break
+#         # print(len(curr_mask[0]))
+# image = cv2.imread('line.jpg')
+# # viewImage(image)
+# gray = cv2.cv2tColor(image, cv2.COLOR_BGR2GRAY)
+# grayscale_17_levels(gray)
+# # viewImage(gray)
+#
+# def get_name_of_templates():
+#     filenames = []
+#     for root, dirs, files in os.walk("."):
+#         filenames.append(files)
+#     return filenames
+#
 def moving_average(a, n=3):
     b = np.cumsum(a, dtype=float)
     b[n:] = b[n:] - b[:-n]
@@ -142,7 +116,10 @@ def get_area_of_each_gray_level(im):
     # print(len(contours[3]))
     # print(type((contours[1][0])))
     # print('hirerchy\n', hirerchy)
-    y = [j for j in (k[0] for k in (i[0] for i in contours[1]))]
+    lenContours = []
+    for i in contours:
+        lenContours.append(len(i))
+    y = [j for j in (k[0] for k in (i[0] for i in contours[lenContours.index(max(lenContours))]))]
     # a = [j for j in (k[0] for k in (i[0] for i in contours[1]))]
     a = [i for i in range(len(y))]
     print(y)
@@ -162,13 +139,13 @@ def get_area_of_each_gray_level(im):
         # if (low <= 0):
         #     break
     # print(contours)
-    return output
-a = get_area_of_each_gray_level(image)
-# print(a)
-
-
-cv2.imwrite('rere.jpg', image)
-viewImage(image)
-templates = get_name_of_templates()
-for i in templates[0]:
-    print(i)
+    return a, y
+a, y = get_area_of_each_gray_level(img_rgb)
+print(a, y)
+#
+#
+# cv2.imwrite('rere.jpg', image)
+# viewImage(image)
+# templates = get_name_of_templates()
+# for i in templates[0]:
+#     print(i)
