@@ -279,7 +279,7 @@ for prot2 in range(len(protElementID)):
                 else:
                     print('Ну капуц')
             else:
-                if nextTerminalID == forgottenTerminalID:
+                if nextTerminalID[0] in forgottenTerminalID:
                     removeTerminalID = nextTerminalID[0]
                     forgottenTerminalID.remove(removeTerminalID)
                 if len(nextTerminalID) > 1:
