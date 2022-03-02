@@ -72,17 +72,24 @@ def global_i():
 
 con = sqlite3.connect(path_db)
 cursorObj = con.cursor()
+# a = cursorObj.execute(
+#     "SELECT * FROM Node WHERE Name NOT LIKE '%ПС%' AND Name NOT LIKE '%N%'AND Name NOT LIKE 'РП%' AND Name NOT LIKE '0%' AND Name NOT LIKE '1%' AND Name NOT LIKE '2%' AND Name NOT LIKE '3%' AND Name NOT LIKE '4%' AND Name NOT LIKE '5%' AND Name NOT LIKE '6%' AND Name NOT LIKE '7%' AND Name NOT LIKE '8%' AND Name NOT LIKE '9%'").fetchall()
+
 a = cursorObj.execute(
-    "SELECT * FROM Node WHERE Name NOT LIKE '%ПС%' AND Name NOT LIKE '%N%'AND Name NOT LIKE 'РП%' AND Name NOT LIKE '0%' AND Name NOT LIKE '1%' AND Name NOT LIKE '2%' AND Name NOT LIKE '3%' AND Name NOT LIKE '4%' AND Name NOT LIKE '5%' AND Name NOT LIKE '6%' AND Name NOT LIKE '7%' AND Name NOT LIKE '8%' AND Name NOT LIKE '9%'").fetchall()
+    "SELECT * FROM Node WHERE (Name LIKE 'КЖ-71-607' OR Name LIKE 'КЖ-71-605' OR Name LIKE 'КЖ-74-601') AND Flag_Variant='1'").fetchall()
 b = []
 
 # nodeStartX = 0
 # nodeStartY = 0
 # nodeEndX = 0
 # nodeEndY = 0
+
 for i in range(len(a)):
-    b.append(cursorObj.execute("SELECT * FROM GraphicNode WHERE Node_ID IN ({0})".format(str(a[i][0]))).fetchall())
+    b.append(cursorObj.execute(f"SELECT * FROM GraphicNode "
+                                f"WHERE Node_ID IN ({str(a[i][0])}) AND Flag_Variant = '1'").fetchall())
+
     # get all graphic node from node with name like 'ТП'
+print(a)
 print(b)
 # b = cursorObj.execute("SELECT * FROM GraphicNode WHERE Node_ID IN ({0})".format(cursorObj.execute("SELECT Node_ID FROM Node WHERE Name LIKE 'ТП%'").fetchall())).fetchall()
 in_data = pd.read_csv('inpkt.csv', sep=';')
@@ -99,7 +106,7 @@ pkt = list(in_data['pkt'])
 #     r'Driver={Microsoft Access Driver (*.mdb)};DBQ=C:\Users\user\Desktop\Денис\pySincall\baza\baza.mdb;')
 
 conn = pyodbc.connect(
-      r'Driver={Microsoft Access Driver (*.mdb)};DBQ=C:\Users\student22\Desktop\Ильнур\baza.mdb;')
+      r'Driver={Microsoft Access Driver (*.mdb)};DBQ=C:\Users\student22\Desktop\Ильнур\скрипт синкал 2.0\baza.mdb;')
 cursor = conn.cursor()
 
 # print(len(a))
@@ -158,7 +165,6 @@ while int(vniz) > 1:
 spisok_yzlov_bez_transov = []
 # spisok_yzlov_bez_ishodnyh_dannyh = []
 
-get_coordinates.get_coordinates_value(b, cursorObj)
 global_value()
 print('Число узлов:', len(a) + 1)
 for i in range(1, len(a) + 1):
@@ -184,6 +190,6 @@ with open('узлы не обработанные скриптом.csv', 'w', ne
 #     for item in spisok_yzlov_bez_ishodnyh_dannyh:
 #         csv_writer.writerow([item])
 
-
+input('save')
 con.commit()  # подтверждаем изменения в БД
 con.close()
