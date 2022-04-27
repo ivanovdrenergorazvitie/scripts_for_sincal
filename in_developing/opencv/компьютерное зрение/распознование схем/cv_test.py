@@ -1,11 +1,12 @@
-import sqlite3
 
+import sqlite3
+from time import time
 import numpy
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 import os
-
+startTime = time()
 path_db = 'database.db'
 path_to_templates = 'templates\\'
 # con = sqlite3.connect(path_db)
@@ -99,7 +100,8 @@ path_to_templates = 'templates\\'
 
 params_for_elem = {'dio': [1],
                    'resist': [1, 1],
-                   'transist': [0,0, 0.7]}
+                   'transist': [0,0, 0.7],
+                   'node': [0,0,0.85]}
 
 def viewImage(image):
     cv2.namedWindow('Display', cv2.WINDOW_NORMAL)
@@ -119,7 +121,8 @@ def moving_average(a, n=3):
 
 def get_contours(im):
     ## convert image to gray scale (must br done before contouring)
-    image = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    # image = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    image = im
     high = 255
 
 
@@ -134,8 +137,6 @@ def get_contours(im):
     # it's area
     ret, threshold = cv2.threshold(image, low, 255, 0)
     for i in threshold:pass
-    # print(threshold)
-    # viewImage(threshold)
     contours, hirerchy = cv2.findContours(threshold, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
     return contours
@@ -170,30 +171,23 @@ def get_element(image, template, rotation=0, template_symmetry=0, threshold=0.8)
             if flag == 0:
                 cv2.rectangle(image, pt, bottom_right, (255, 255, 255), -1)
                 result.append(pt)
-    print(h, w)
+    # print(h, w)
     return result, h, w
 
 def get_terminal(elements, contours):
     a = dict()
     b = 0
-    # print(h, w)
-    # print(elements[1], elements[2])
-    # print(contours)
     for i in elements:
         a[i] = []
         if elements.index(i) < 3:
             continue
         for l in contours:
             for k in l:
-                # print(k)
                 if str(i[0]).isdigit() and (k[0][0]) in [j for j in range(i[0]-1, i[0]+1 + elements[2])] \
                         and (k[0][1]) in [j for j in range(i[1]-1, i[1]+1 + elements[1])]:
                     b += 1
-                    # a[i] += [list(k[0])]
-                    print(type(contours))
+                    # print(type(contours))
                     a[i] += [contours.index(l)]
-                    # print(l)
-                    # print(k)
 
                     break
     print(b)
@@ -202,95 +196,36 @@ def get_terminal(elements, contours):
 
 
 elements = []
-img = cv2.imread('schem.png')
-template = cv2.imread(r'C:\Users\user\Desktop\scripts_for_sincal\in_developing\opencv\компьютерное зрение\распознование схем\templates\dio.png')
+img = cv2.imread('test_XL.png', cv2.IMREAD_REDUCED_GRAYSCALE_2)
+print('загрузка изображения', time() - startTime)
+# template = cv2.imread(r'C:\Users\user\Desktop\scripts_for_sincal\in_developing\opencv\компьютерное зрение\распознование схем\templates\dio.png', cv2.IMREAD_GRAYSCALE)
 for i in get_namepath_to_templates(path_to_templates):
-    template = cv2.imread(path_to_templates + i)
-    # print(path_to_templates + i, '\n')
-    contours_el, h, w = get_element(img, template, 1, 1)
+    template = cv2.imread(path_to_templates + i, cv2.IMREAD_GRAYSCALE)
+    # viewImage(template)
+    contours_el, h, w = get_element(img, template, *params_for_elem[i.split('.')[0]])
     elements += [[i.split('.')[0], h, w] + contours_el]
 
+print('elements', time() - startTime)
 contours = get_contours(img)
+print('contours', time() - startTime)
 cv2.drawContours(img, contours, -1, (0, 0, 255), 1)
-for i in contours:
-    print((i.tolist()))
+print('drawcontours', time() - startTime)
 contours = [i.tolist() for i in contours]
-# print(type(contours))
-# print(type(contours[0]))
-# print(type(contours[0][0]))
-print(elements)
-for i in elements:
-    # print(i[0], '-', len(i) - 1)
-    print(get_terminal(i, contours))
-# print(len(get_element(img, template, threshold=0.75)))
-        # print(get_element(img, template, threshold=0.75))
-    # print(elements)
-    # print(get_element(img, template))
-# contours = get_contours(img)
-# a = [len(i) for i in contours]
-# longest_contour = contours[a.index(max(a))]
-# y = [j for j in (k[0] for k in (i[0] for i in longest_contour))]
-# x = [j for j in (k[1] for k in (i[0] for i in longest_contour))]
-# print(len(elements[1]))
-# viewImage(img)
+print(len(elements[1]))
+print(sum([len(i) for i in contours]))
+print(len(elements[1])*sum([len(i) for i in contours]))
+
+elements_contours = dict()
+# for i in elements:
+#     # print(i[0], '-', len(i) - 1)
+#     a = get_terminal(i, contours)
+#     # print((list(a.items())[0][0]))
+#     elements_contours[list(a.items())[0][0]] = a
+print('get_term', time() - startTime)
 cv2.imwrite("result.png", img)
-
-# x = [j for j in (k[0] for k in (i[0] for i in contours[19]))]
-# y = [j for j in (k[1] for k in (i[0] for i in contours[19]))]
-# plt.plot((numpy.diff(moving_average(y))) / len((numpy.diff(moving_average(y)))))
-# plt.show()
-
-# plt.plot(numpy.diff(y) / numpy.diff(a) )
-# plt.show()
-# plt.plot(moving_average(numpy.diff(y) / numpy.diff(a) ))
-# plt.show()
-# print(moving_average(numpy.diff(y) / numpy.diff(a) ))
-
-
-# viewImage(template)
-# print('CONTOUR X:', x)
-# print('CONTOUR Y:', y)
-# print('CONTOURS:', contours)
-# print('CONTOUR X:', len(x))
-# print('CONTOUR Y:', len(y))
-# print('CONTOUR Y:', [i for i in zip(x, y)])
-# print('ELEMENTS', elements)
-# # print('ELEMENTS', len(100 * elments))
-# elements = list(zip(x, y))
-# for i in zip(x,y):
-#     if i in elements:
-#         print('s')
-#     print(i)
-#     print(elements[0])
-# print(get_namepath_to_templates())
-
-# img_rgb = cv2.imread('result.jpg')
-# img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-# ret, threshold_image = cv2.threshold(img_gray, 127, 255, cv2.THRESH_BINARY)
-# h, w = template.shape[:2]
-#
-# center = (w // 2, h // 2)
-# # res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
-# # res = [res]
-# for i in range(1):
-#     M = cv2.getRotationMatrix2D(center, 90, 1.0)
-#     template = cv2.warpAffine(template, M, (w, h))
-#     res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
-#     threshold = 0.85
-#     print(len(res[1]))
-#     print((res[1]))
-#     # print(img_gray)
-#     # Возьмем координаты со степенью совпадения больше% 80
-#     loc = np.where(res >= threshold)
-#     # print(loc)
-#     print(type(loc))
-#     # print(zip(*loc[::-1]))
-#     for pt in zip(*loc[::-1]):  # * Обозначает необязательные параметры
-#         bottom_right = (pt[0] + w, pt[1] + h)
-#         cv2.rectangle(img_rgb, pt, bottom_right, (0, 0, 255), 1)
-
-
-
+print('imwrite', time() - startTime)
+# print(elements_contours)
 
 # con.commit()  # подтверждаем изменения в БД
 # con.close()
+# =======

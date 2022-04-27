@@ -74,6 +74,7 @@ def pl_elem():
             tr_index = node.index(a[i - 1][4] + ' Т1')
             pl_pkt.tr_index = tr_index
             pl_load.tr_index = tr_index
+            print('check')
             try:
                 for j in range(1, 100):
                     if any((a[i - 1][4] + ' Т' + str(j)) in s for s in node):
@@ -83,11 +84,12 @@ def pl_elem():
                 print()
         except:
             return (a[i - 1][4])
-    for k in range(1, j):
+    for k in range(1, j+1):
         max_id(k)
         global_max_id()
         get_coordinates.get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList)
         pl_tr.pl_tr(k, j)
         pl_load.pl_load(k, j)
         pl_pkt.pl_pkt()
+    print('check')
     return 0

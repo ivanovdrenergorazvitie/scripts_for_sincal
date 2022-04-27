@@ -10,7 +10,7 @@ import pl_elem
 import pl_tr
 import pl_pkt
 import pl_load
-path_db = 'database.db'
+path_db = 'database_depl.db'
 
 def global_value():
     pl_elem.node = node
@@ -74,7 +74,7 @@ def global_i():
 con = sqlite3.connect(path_db)
 cursorObj = con.cursor()
 a = cursorObj.execute(
-    "SELECT * FROM Node WHERE Name NOT LIKE '%ПС%' AND Name NOT LIKE '%N%'AND Name NOT LIKE 'РП%' AND Name NOT LIKE '0%' AND Name NOT LIKE '1%' AND Name NOT LIKE '2%' AND Name NOT LIKE '3%' AND Name NOT LIKE '4%' AND Name NOT LIKE '5%' AND Name NOT LIKE '6%' AND Name NOT LIKE '7%' AND Name NOT LIKE '8%' AND Name NOT LIKE '9%'").fetchall()
+    "SELECT * FROM Node WHERE Name LIKE 'ТП%'").fetchall()
 b = []
 
 # nodeStartX = 0
@@ -86,7 +86,7 @@ for i in range(len(a)):
     # get all graphic node from node with name like 'ТП'
 print(b)
 # b = cursorObj.execute("SELECT * FROM GraphicNode WHERE Node_ID IN ({0})".format(cursorObj.execute("SELECT Node_ID FROM Node WHERE Name LIKE 'ТП%'").fetchall())).fetchall()
-in_data = pd.read_csv('inpkt.csv', sep=';')
+in_data = pd.read_csv('inppkt.csv', sep=';')
 node = list(in_data['node'])
 trans = list(in_data['trans'])
 tr_s = list(in_data['tr_s'])
@@ -100,7 +100,7 @@ pkt = list(in_data['pkt'])
 #     r'Driver={Microsoft Access Driver (*.mdb)};DBQ=C:\Users\user\Desktop\Денис\pySincall\baza\baza.mdb;')
 
 conn = pyodbc.connect(
-      r'Driver={Microsoft Access Driver (*.mdb)};DBQ=C:\Users\student22\Desktop\Ильнур\скрипт синкал 2.0\baza.mdb;')
+      r'Driver={Microsoft Access Driver (*.mdb)};DBQ=C:\Users\user\Desktop\scripts_for_sincal\autobuild\baza.mdb;')
 cursor = conn.cursor()
 
 # print(len(a))
@@ -167,6 +167,7 @@ for i in range(1, len(a) + 1):
     global_i()
     # print(a[i - 1][4])
     u = pl_elem.pl_elem()
+    # print(u)
     if u != 0:
         spisok_yzlov_bez_transov.append(a[i - 1][4])
         number_of_err += 1

@@ -23,7 +23,6 @@ def moving_average(a, n=3):
 
 print(get_name_of_templates("templates"))
 
-def place_element
 
 
 
