@@ -196,7 +196,7 @@ def get_terminal(elements, contours):
 
 
 elements = []
-img = cv2.imread('test_XL.png', cv2.IMREAD_REDUCED_GRAYSCALE_2)
+img = cv2.imread('schem.jpg', cv2.IMREAD_GRAYSCALE)
 print('загрузка изображения', time() - startTime)
 # template = cv2.imread(r'C:\Users\user\Desktop\scripts_for_sincal\in_developing\opencv\компьютерное зрение\распознование схем\templates\dio.png', cv2.IMREAD_GRAYSCALE)
 for i in get_namepath_to_templates(path_to_templates):
@@ -216,11 +216,11 @@ print(sum([len(i) for i in contours]))
 print(len(elements[1])*sum([len(i) for i in contours]))
 
 elements_contours = dict()
-# for i in elements:
-#     # print(i[0], '-', len(i) - 1)
-#     a = get_terminal(i, contours)
-#     # print((list(a.items())[0][0]))
-#     elements_contours[list(a.items())[0][0]] = a
+for i in elements:
+    # print(i[0], '-', len(i) - 1)
+    a = get_terminal(i, contours)
+    # print((list(a.items())[0][0]))
+    elements_contours[list(a.items())[0][0]] = a
 print('get_term', time() - startTime)
 cv2.imwrite("result.png", img)
 print('imwrite', time() - startTime)
