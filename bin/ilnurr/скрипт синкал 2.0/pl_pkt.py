@@ -128,6 +128,6 @@ def pl_pkt():
             str(Max_GraphicText_ID + 8 * i - 6)))
     #   ---- Изображение предохранителя
     cursorObj.execute(
-        "INSERT INTO GraphicAddTerminal VALUES ({0}, {1}, 1, 1, {2}, 0, -1, 0, 1, 25, 1, 4, 0, 0.0, 0.0, 292, 4, 2, 86, 1, 0, 10.0, 1, 1)".format(
+        "INSERT INTO GraphicAddTerminal VALUES ({0}, {1}, 1, 1, {2}, 0, -1, 0, 1, 30, 1, 4, 0, 0.0, 0.0, 292, 4, 2, 86, 3, 0, 10.0, 1, 1)".format(
             str(Max_GraphicAddTerminal_ID + i), str(Max_Terminal_ID + 3 * i), str(Max_GraphicText_ID + 8 * i - 6)))
 

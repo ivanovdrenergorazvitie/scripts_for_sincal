@@ -64,7 +64,7 @@ def global_max_id():
     pl_load.Max_GraphicElement_ID = Max_GraphicElement_ID
     pl_load.Max_GraphicTerminal_ID = Max_GraphicTerminal_ID
 def pl_elem():
-    j = 1
+    j = 2
     try:
         tr_index = node.index(a[i - 1][4])
         pl_pkt.tr_index = tr_index
@@ -89,7 +89,7 @@ def pl_elem():
         print('Т' + str(k))
         max_id(k)
         global_max_id()
-        get_coordinates.get_coordinates(k, cursorObj, b, i, j, line, lT1, lineList)
+        get_coordinates.get_coordinates(k, cursorObj, b, i, j)
         pl_tr.pl_tr(k, j)
         pl_load.pl_load(k, j)
         pl_pkt.pl_pkt()
